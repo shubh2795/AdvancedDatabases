@@ -1,0 +1,72 @@
+Question 1:
+
+MATCH (a:Actor)-[:ACTS_IN]->(),(d:Director)- [:DIRECTED]->() 
+WHERE a.name=d.name and a.id = d.id
+SET a:ACTORDIRECTOR;
+
+
+
+Question 2:
+
+MATCH (a:Actor)-[:ACTS_IN]->(),(d:Director)- [:DIRECTED]->() 
+WHERE a.name=d.name and a.id = d.id
+RETURN  count(distinct  a);
+
+
+Question 3: 
+
+MATCH (actrs:Person {name: "Kevin Bacon"})-[:ACTS_IN]->(KevinBaconMovies)
+RETURN KevinBaconMovies.title
+
+
+
+
+Question 4: 
+
+MATCH (a:Actor{name: "Kevin Bacon"})-[:ACTS_IN]->(m:Movie)<-[:ACTS_IN]-(b:Actor) Return count( DISTINCT b);
+
+
+ ----- OR the following query gives the names of distinct actors that have acted in some movie with Keven Bacon
+MATCH (a:Actor{name: "Kevin Bacon"})-[:ACTS_IN]->(m:Movie)<-[:ACTS_IN]-(b:Actor) Return DISTINCT  b.name;
+
+
+
+Question 5: 
+
+I tried 2 approaches for this question, the solution below works fine, it is modified from an example from the internet.
+
+MATCH (bacon:Actor {name:"Kevin Bacon"})-[:ACTS_IN]->(:Movie)<- [:ACTS_IN*1..5]
+-(a:Actor)RETURN Distinct a.name limit 100
+
+
+
+Question 6: 
+
+MATCH (a:Actor)-[:ACTS_IN]->(m:Movie)
+WITH a, count(m) AS movie_count
+WHERE movie_count >= 40
+RETURN a.name	
+
+
+Question 7: Implemented from an example from neo4j website
+
+MATCH (actor:Actor { name: "Brock Lesnar" })-[:ACTS_IN]->(movie:Movie)
+WITH collect(movie) as movies, actor
+MATCH (coactors:Actor)-[:ACTS_IN]->()<-[:ACTS_IN]-(actor)
+WHERE ALL(movie in movies WHERE (movie)<-[:ACTS_IN]-(coactors))
+RETURN DISTINCT coactors.name
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+Question 5 Approach two(works partially)
+For the second approach 
+
+MATCH (a:Actor{name: "Kevin Bacon"})-[:ACTS_IN]->(m:Movie)<-[:ACTS_IN]-(b:Actor)
+MATCH (b:Actor)-[:ACTS_IN]->()<-[:ACTS_IN]-(c:Actor)
+WHERE c <> a AND NOT (a)-[:ACTS_IN]->()<-[:ACTS_IN]-(c)
+RETURN(c.name)
+-- returns names uptill this point but  is probably 2 degree from kevin bacon I tried to match with the below clauses butit did not work.
+MATCH (c:Actor)-[:ACTS_IN]->()<-[:ACTS_IN]-(d:Actor)
+MATCH (d:Actor)-[:ACTS_IN]->()<-[:ACTS_IN]-(e:Actor) 

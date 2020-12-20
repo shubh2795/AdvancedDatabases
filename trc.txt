@@ -1,0 +1,34 @@
+
+
+What are the titles of movies made before 2002?
+
+{T.title | movie(T) and T.year < 2002};
+
+
+
+What is the name of an actor who was cast in the first (earliest) movie?
+
+{A.name |actor(A) and exists C exists M (casting(C) and movie(M)  and C.actorid = A.actorid and C.movieid = M.movieid  and not exists M1( movie(M1) and M1.year < M.year )) } ;
+
+
+
+Which actors (their names) have been cast in exactly one movie ? 
+
+{A.name |actor(A) and exists C not exists C1  ( casting(C) and casting(C1) and C.actorid = A.actorid and C1.actorid = A.actorid and C.movieid != C1.movieid   )};
+
+
+
+In which years were at least three movies made?
+
+{M.year | movie(M) and exists M1  exists M2 (movie(M1) and movie(M2) and M.movieid != M1.movieid and M1.movieid != M2.movieid and M.movieid != M2.movieid  and  M.year = M1.year and M1.year = M2.year and M.year = M2.year )};
+	
+
+What are the names of the actors who have been cast in all of the movies (if any such actors exist)?
+
+{A.name| actor(A) and forall C (casting(C) implies A.actorid = C.actorid   )}
+
+
+What is the title of the movie with the highest vote count?
+
+{ M.title | movie(M) and not exists M1 (movie(M1) and M1.votes > M.votes) };
+
